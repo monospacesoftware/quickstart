@@ -20,7 +20,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.as.quickstarts.websocket;
+package org.jboss.as.quickstarts.websocket.client;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
@@ -37,6 +37,6 @@ import javax.inject.Qualifier;
 @Qualifier
 @Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
-public @interface Backend {
+public @interface ToBackend {
 
 }

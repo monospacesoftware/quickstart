@@ -20,34 +20,50 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.as.quickstarts.websocket;
+package org.jboss.as.quickstarts.websocket.client;
 
-import java.io.*;
+import static java.lang.String.format;
 
-import javax.json.*;
-import javax.websocket.*;
+import java.io.Serializable;
 
 /**
  * @author <a href="http://monospacesoftware.com">Paul Cowan</a>
  */
 
-public class SessionMessageEncoder implements Encoder.TextStream<SessionMessage> {
+public class SessionMessage implements Serializable {
 
-  @Override
-  public void init(EndpointConfig config) {
+  private static final long serialVersionUID = 1L;
+
+  private String sessionId;
+  private String text;
+
+  public SessionMessage() {
+
   }
 
-  @Override
-  public void destroy() {
+  public SessionMessage(String sessionId, String text) {
+    this.sessionId = sessionId;
+    this.text = text;
   }
 
-  @Override
-  public void encode(SessionMessage object, Writer writer) throws EncodeException, IOException {
-    JsonObject jsonObject = Json.createObjectBuilder()
-        .add("sessionId", object.getSessionId())
-        .add("txt", object.getText())
-        .build();
-    Json.createWriter(writer).writeObject(jsonObject);
+  public String getSessionId() {
+    return sessionId;
   }
 
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public void setText(String text) {
+    this.text = text;
+  }
+
+  public String toString() {
+    return format("%s:%s", sessionId, text);
+  }
+  
 }

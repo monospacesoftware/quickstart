@@ -20,31 +20,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.as.quickstarts.websocket;
+package org.jboss.as.quickstarts.websocket.client;
 
-import java.io.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.json.*;
-import javax.websocket.*;
+import java.lang.annotation.*;
+
+import javax.inject.Qualifier;
 
 /**
  * @author <a href="http://monospacesoftware.com">Paul Cowan</a>
  */
 
-public class SessionMessageDecoder implements Decoder.TextStream<SessionMessage> {
-
-  @Override
-  public void init(EndpointConfig config) {
-  }
-
-  @Override
-  public void destroy() {
-  }
-
-  @Override
-  public SessionMessage decode(Reader reader) throws DecodeException, IOException {
-    JsonObject jsonObject = Json.createReader(reader).readObject();
-    return new SessionMessage(jsonObject.getString("sessionId"), jsonObject.getString("txt"));
-  }
+@Qualifier
+@Target({ FIELD, PARAMETER })
+@Retention(RUNTIME)
+public @interface ToBroadcast {
 
 }

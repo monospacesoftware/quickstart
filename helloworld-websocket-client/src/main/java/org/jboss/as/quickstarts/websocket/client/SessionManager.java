@@ -20,49 +20,40 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.as.quickstarts.websocket;
-
-import static java.lang.String.format;
+package org.jboss.as.quickstarts.websocket.client;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.websocket.Session;
 
 /**
  * @author <a href="http://monospacesoftware.com">Paul Cowan</a>
  */
 
-public class SessionMessage implements Serializable {
+@ApplicationScoped
+public class SessionManager implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String sessionId;
-  private String text;
+  private ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
 
-  public SessionMessage() {
-
+  public void open(Session session) {
+    sessions.put(session.getId(), session);
+  }
+  
+  public Session get(String id) {
+    return sessions.get(id);
+  }
+  
+  public void close(String id) {
+    sessions.remove(id);
+  }
+  
+  public Collection<Session> getAll() {
+    return sessions.values();
   }
 
-  public SessionMessage(String sessionId, String text) {
-    this.sessionId = sessionId;
-    this.text = text;
-  }
-
-  public String getSessionId() {
-    return sessionId;
-  }
-
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
-  }
-
-  public String getText() {
-    return text;
-  }
-
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public String toString() {
-    return format("%s:%s", sessionId, text);
-  }
 }

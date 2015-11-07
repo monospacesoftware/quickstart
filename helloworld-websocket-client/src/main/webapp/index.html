@@ -16,49 +16,102 @@
 -->
 <!DOCTYPE html>
 <html>
-<head>
-<title>Hello World - Web Socket</title>
-</head>
-<body>
-<h1>Hello World - Web Socket</h1>
-<form>
-    <fieldset>
-        <label>Text</label>
-        <input id="text" type="text" value="Hello, World!"/>
-        <input type="submit" id="shout" value="Shout!"/>
-    </fieldset>
-</form>
-<h2>Result</h2>
-<span id="result"></span>
-
-<script>
-
-var port = "";
-if (window.location.host.search(".rhcloud.com") > 0) {
-  port = ":8000";
-}
-var url = 'ws://' + window.location.host + port + window.location.pathname + 'shout';
-var ws = new WebSocket(url);
-ws.onconnect = function(e) {
-  console.log("connected");
-}
-ws.onerror = function (error) {
-  console.log('WebSocket Error ' + error);
-};
-ws.onclose = function(event){
-     console.log("Remote host closed or refused WebSocket connection");
-     console.log(event);
-};
-ws.onmessage = function(message) {
-  document.getElementById("result").innerHTML = message.data;
-};
-
-document.getElementById("shout").onclick =  function(event) {
-  event.preventDefault();
-  var text = document.getElementById("text").value;
-  ws.send(text);
-};
-</script>
-</head>
-</body>
+  <head>
+    <title>WebSocket Echo Relay</title>
+    <style>
+      body {
+        font-family: Verdana, Geneva, sans-serif;
+        font-size: 14px;
+        color: black;
+        background-color: white;
+      }
+      input {
+        font-family: 'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;
+        font-size: 14px;
+        color: black;
+        border: 1px solid black;
+      }
+      textarea {
+        white-space: pre;
+        word-wrap: normal;
+        overflow-x: scroll;
+      }
+      #title {
+        padding-left: 10px;
+        font-size: 16px;
+      }
+      #subtitle {
+        padding-left: 10px;
+        font-size: 12px;
+        color: gray;
+      }
+      #log {
+        border: 1px solid black;
+        width: 800px;
+        height: 400px;
+        font-family: 'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace;
+        font-size: 14px;
+        font-weight: bold;
+        color: black;
+        margin-top: 10px;
+      }
+      #control {
+        padding-top: 10px;
+      }
+      #message{
+        width: 600px;
+        margin-right: 10px;
+        font-weight: bold;
+        padding-left: 10px;
+      }
+      #send {
+        width: 180px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body style="">
+    <form>
+      <div id="title">WebSocket Echo Relay</div>
+      <div id="subtitle">Browser &lt;-&gt; ServerEndpoint &lt;-&gt; ClientEndpoint &lt;-&gt; EchoServer</div>
+      <textarea id="log" disabled="disabled" wrap="hard" ></textarea>
+      <div id="control">
+        <input id="message" type="text"/>
+        <input type="submit" id="send" value="Send"/>
+      </div>
+    </form>
+    <script>
+      var port = "";
+      if (window.location.host.search(".rhcloud.com") > 0) {
+        port = ":8000";
+      }
+      var url = 'ws://' + window.location.host + port + window.location.pathname + 'relay';
+      log("Connecting to " + url);
+      var ws = new WebSocket(url);
+      ws.onerror = function(event) {
+        log("Error: " + event);
+      };
+      ws.onclose = function(event){
+       log("Closed: " + event.code + ":" + codes[event.code] + " " + event.reason);
+      };
+      ws.onmessage = function(message) {
+        log("RECV: " + message.data);
+      };
+      document.getElementById("send").onclick = function(event) {
+        event.preventDefault();
+        var msg = document.getElementById("message").value;
+        if (msg) {
+          log("SEND: " + msg);
+          ws.send(msg);
+        }
+      };
+      function log(s) {
+        var d = new Date();
+        var timestamp = "[" + d.toTimeString().slice(0, 8) + "] ";
+        document.getElementById("log").value += timestamp + s + "\n";
+      }
+      document.getElementById("message").focus();
+      var codes = {1000:"Normal", 1001:"Going away", 1002:"Protocol error", 1003:"Unsupported", 1005:"No status", 1006:"Abnormal", 1009:"Too large"};
+    </script>
+  </body>
 </html>
